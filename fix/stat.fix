@@ -1,0 +1,32 @@
+# Export-Statistik für OENB-BibTeX-Daten 
+# catmandu convert BibTeX to Stat --fix ./fix/stat.fix --fields Aufsätze_Monografien,Rezensionen,Abstracts < dmpbms_${Date}.btx
+
+if any_match(keywords,'austrian_committee')
+   if any_match(abstract,'.*')
+      copy_field(abstract,'Abstracts')
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if any_match(abstract_i,'.*')
+      copy_field(abstract_i,'Abstracts')
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if any_match(abstract_ii,'.*')
+      copy_field(abstract_ii,'Abstracts')
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if any_match(type,'ab|ac|ad|ae|ag|ap|as|ea|bc|bd|be|bf|bg|bs|bt|dd|dm|er')
+      copy_field(type,Aufsätze_Monografien)
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if any_match(type,'r\w{1}')
+      copy_field(type,Rezensionen)
+   end
+end

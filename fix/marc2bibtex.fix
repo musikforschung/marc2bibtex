@@ -1,0 +1,521 @@
+# Transformation der OENB-Daten von MARC nach BibTeX
+# catmandu -I ../lib convert MARC --type MARCMaker to BibTeX --fix ./fix/marc2bibtex.fix < ./data/oenb.mrk > oenb_rilm.btx
+
+marc_map('009','_id')
+
+#isbn
+marc_map(020a,isbn,split:1)
+sort_field(isbn,uniq:1)
+join_field(isbn,', ')
+
+#issn
+marc_map(022a,issn,split:1)
+sort_field(issn,uniq:1)
+join_field(issn,', ')
+
+#doi
+if marc_match(007/0-1,'cr|sr')
+   marc_map(024a,'doi')
+end
+
+# language
+marc_map(041a,'language',split: 1)
+lookup(language.*,'./dictionary/language.csv')
+join_field(language,', ')
+
+# edition 250$a
+marc_map(250a,edition)
+
+#year 264$c
+do marc_each()
+   if marc_has('264[,1]c')
+      marc_map('264[,1]c',tmp_year)
+   else
+      marc_map(008/7-10,tmp_year)
+   end
+   replace_all(tmp_year,'\[|\]|\?|\@',"")
+   replace_all(tmp_year,'[A-Z]|[a-z]',"")
+   trim(tmp_year)
+   copy_field(tmp_year,year)
+end
+
+#url 856u
+do marc_each()
+   if marc_match(856$3,'^Volltext.*')
+      marc_map(856u,url.$append)
+   end
+end
+join_field(url,', ')
+
+# country
+marc_map(044c,'country',split: 1)
+# rename countrycode ISO DIN EN ISO 3166-1:1998 + DIN EN ISO 3166-3:2001 into RILM tags
+lookup(country.*,'./dictionary/countrycode.csv')
+sort_field(country.*)
+uniq(country.*)
+join_field(country,', ')
+
+# country in Aufsätzen
+# add country in articles and reviews from superordinated work
+if marc_match(LDR/7,'a')
+   marc_map(773$w,tmp)
+   replace_all(tmp,'\(AT-OBV\)',"")
+   lookup(tmp,'./data/countrycodelist.csv')
+   split_field(tmp,', ')
+   lookup(tmp.*,'./dictionary/countrycode.csv')
+   copy_field(tmp,country)
+   join_field(country,', ')
+   rm(tmp)
+end
+
+#title
+if marc_has(245$p)
+   set_array(series_title)
+   set_array(subdivision_title)
+   marc_map(245$ab,'tmp_series_title',join:' : ')
+   replace_all(tmp_series_title,'<<|>>',"")
+   marc_map(245$np,tmp_subdivision_title,split:1)
+   replace_all(tmp_subdivision_title,'<<|>>',"")
+   join_field(tmp_subdivision_title,' ; ')
+   replace_all(tmp_subdivision_title,'/',"//")
+   if marc_has(245$c)
+      copy_field(tmp_series_title,series_title.$append)
+      marc_map(245$c,tmp_series_editor)
+      copy_field(tmp_series_editor,series_title.$append)
+	  join_field(series_title,' // ')
+	  copy_field(series_title,title.$append)
+   else
+      copy_field(tmp_series_title,title.$append)   
+   end	  
+   copy_field(tmp_subdivision_title,title.$append)
+   join_field(title,' . ')
+else
+   marc_map(245ab,'title',join:' : ')
+   replace_all(title,'<<|>>',"")
+end
+
+# author (100a)
+if marc_has(100$a)
+   unless marc_has(100$4)
+      marc_add(100,4,'aut')
+   end
+end
+
+if marc_match(1004,'aut|ivr|ive')
+   marc_map(100a,'dc_creator')
+   replace_all(dc_creator,'<<|>>',"")
+   copy_field(dc_creator,author.$append)
+   remove_field(dc_creator)
+end   
+
+# weitere Personen (700a)
+do marc_each()
+   if marc_has(700$a)
+      unless marc_has(700$4)
+         marc_add(700,4,'oth')
+	  end
+   end
+   if marc_match(7004,'edt')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"") 
+      copy_field(dc_creator,editor.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'aut|ivr|ive')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'trl')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_translator.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'ill')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_illustrator.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'dgs')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_supervisor.$append)
+  else
+      marc_map(971[0]$a,'dc_creator')
+	  marc_map(971[1]$a,'dc_creator')
+      marc_map(971[2]$a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_supervisor.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'ctb|oth|pan')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator.*,'<<|>>',"")
+      copy_field(dc_creator,author_collaborator.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'wac')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_commentator.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'com')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_compiled.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'wpr')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_foreword.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'aft')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_afterword.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'win')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,author_introduction.$append)
+   end
+   remove_field(dc_creator)
+   if marc_match(7004,'hnr')
+      marc_map(700a,'dc_creator')
+	  replace_all(dc_creator,'<<|>>',"")
+      copy_field(dc_creator,honoured.$append)
+   end
+   remove_field(dc_creator)
+end   
+
+# corporations
+do marc_each()
+   if marc_has(710$a)
+      unless marc_has(710$4)
+         marc_add(710,4,'pbl')
+      end
+   end
+   if marc_match(7104,'edt|isb|com')
+      marc_map(710a,editor.$append)
+   end
+   if marc_match(7104,'pbl')
+      marc_map(710a,publisher.$append)
+   end
+   if marc_match(7104,'aut')
+      marc_map(710a,author.$append)
+   end
+end
+
+unless exists(publisher)
+   if marc_match(LDR/7,'s')
+      marc_map('264[31]$b',publisher,split:1)
+   else
+      marc_map('264[,1]$b',publisher,split:1)
+   end
+end
+
+# notes 300b
+if marc_has(300b)
+   marc_map(300b,note)
+   split_field(note,', |,')
+   trim(note.*)
+   lookup(note.*,./dictionary/note.csv)
+   sort_field(note,numeric:1)
+   uniq(note)
+   join_field(note,', ')
+end
+
+# type LDR/655a/502b
+if marc_match(LDR/7,'s')
+   if marc_match(008/21,'m')
+      add_field(ignore)
+   end
+end
+reject exists(ignore)
+
+#monograph      
+if marc_match(LDR/7,'m')
+   set_field(type,'bm')
+end
+#journal
+if marc_match(LDR/7,'s')
+   if marc_match(008/21,"p")
+	  set_field(type,'bp')
+   end
+end
+#article
+if marc_match(LDR/7,'a')
+   marc_map(773w,tmp)
+   replace_all(tmp,'\(AT\-OBV\)',"")
+   lookup(tmp,'./data/type.csv')
+   copy_field(tmp,type)
+   if any_match(type,'a\w{1}|ea') 
+      marc_map(773w,crossref)
+      replace_all(crossref,"\(AT\-OBV\)","")
+      trim(crossref)
+   elsif any_match(type,'AC\d{6,}')
+      set_field(type,'misc')	  
+   end
+end
+
+#Formschlagwörter
+do marc_each()
+   marc_map(655$0,dc_type,split:1)
+   do list(path:dc_type,var:tmp)
+      # collection
+      if any_match(tmp,'\(DE\-588\)4143413\-4')
+         set_field(type,'bc')
+	  end   
+      # proceeding
+      if any_match(tmp,'\(DE\-588\)1071861417')
+	     set_field(type,'bs')
+      end
+      # Festschrift
+      if any_match(tmp,'\(DE\-588\)4016928\-5')
+         set_field(type,'be')
+      end
+   end	 
+end   
+#festschrift
+unless any_match(type,'be')
+  if marc_match(008/30,'1')
+     set_field(type,'be')
+  end
+end
+#proceeding
+unless any_match(type,'bs')
+   if marc_match(008/29,'1')
+      set_field(type,'bs')
+   end
+end
+
+
+if marc_has(111)
+   marc_map(111a,'eventtitle',join:', ')
+   marc_map(111d,'eventdate',join:', ')
+   marc_map(111c,'location',join:', ')
+   if marc_match(1114,'aut')
+      marc_map(111a,author.$append)
+   end
+   if marc_match(1114,'edt')
+      marc_map(111a,editor.$append)
+   end
+else
+   do marc_each()
+      if marc_match(6550,'\(DE\-588\)1071861417')
+         marc_map(655y,'eventdate',join:', ')
+         marc_map(655z,'location',join:', ')
+      end
+   end	 
+end
+
+
+#thesis
+do marc_each()
+   if marc_match(502b,'Dissertation')
+      set_field(type,'dd')
+	  marc_map(502c,'institution',join:', ')
+   end
+   if marc_match(502b,'Bachelorarbeit|Diplomarbeit|Habilitationsschrift|Habilitation|Lizensiatsarbeit|Magisterarbeit|Masterarbeit')
+      set_field(type,'dm')
+	  marc_map(502c,'institution',join:', ')
+   end
+end
+
+# pages
+if marc_match(LDR/7,'m')
+   marc_map(300a,'pages')
+   replace_all(pages,"\sBlätter|\sSeiten|\sSeite|\sS\.","")
+end
+#pages article
+### Hr. Strümper hatte die Seitenzahlen ergänzt und in Feld 520 abgelegt. Daher werden diese Angaben zur Zeit aus 520 genommen. Ab dem dritten Quartal 2025 wird er nur noch das Feld 773g nutzen. Das Skript dann bitte anpassen.
+#if marc_match(LDR/7,'a')
+#   marc_map(773[0]g,'pages')
+#   replace_all(pages,"Seiten\s|Seite\s|S\.\s","")
+#end
+
+if marc_match(LDR/7,'a')
+   if marc_match(520,"\(.*\)\s*\(.*\d{1,}(\-|\–)\d{1,}\)$")
+      marc_map(520a,tmp)
+      parse_text(tmp,"\(.*\)\s*\(\s?\w{1,6}(\.?|:?)\s?(?<pages>\d{1,}(\-|\–)\d{1,})\)$")
+      copy_field(tmp.pages,pages)
+      remove_field(tmp)
+   else
+      marc_map(773g,'pages')
+      replace_all(pages,"Seiten\s|Seite\s|S\.\s|S\:\s","")
+   end
+end
+
+# series 490$a$v / series + volume
+if marc_match(LDR/7,'m')
+   if marc_has(490)
+      marc_map(490av,tmp_series,split:1,nested_arrays:1)
+      replace_all(tmp_series.*,'<<|>>',"")
+	  replace_all(tmp_series.*.1,'new\sseries,\s',"")
+      replace_all(tmp_series.*.1,'(\.\s[Jj]\w*)',"")
+      replace_all(tmp_series.*.1,'(\.\s)*[BbVvNnJjHhEe]\w*\.*\s*',"")
+   end
+end
+if exists(tmp_series.2)
+   copy_field(tmp_series.2.0,series_III)
+   copy_field(tmp_series.1.0,series_II)
+   copy_field(tmp_series.0.0,series_I)
+   copy_field(tmp_series.2.1,volume_III)
+   copy_field(tmp_series.1.1,volume_II)
+   copy_field(tmp_series.0.1,volume_I)
+end
+if exists(tmp_series.1)  
+   unless exists(tmp_series.2)
+      copy_field(tmp_series.1.0,series_II)
+      copy_field(tmp_series.0.0,series_I)
+	  copy_field(tmp_series.1.1,volume_II)
+      copy_field(tmp_series.0.1,volume_I)
+   end
+end
+if exists(tmp_series.0)  
+   unless exists(tmp_series.1)
+      copy_field(tmp_series.0.0,series)
+	  copy_field(tmp_series.0.1,volume)
+   end
+end
+
+# volume (articles)
+if marc_match(LDR/7,'a')
+   marc_map(773g,'tmp')
+   replace_all(tmp,"\(AT\-OBV\)","")
+   lookup(tmp,'./data/volume.csv')
+   if any_match(tmp,"^\d{1,5}")
+      copy_field(tmp,'volume')
+      remove_field(tmp)
+   end
+end
+
+# address
+if marc_match(LDR/7,'s|m')
+   if marc_has('264[31]a')
+      marc_map('264[31]a',address,split:1)
+      uniq(address)
+      join_field(address,', ')
+   elsif
+      marc_has('264[,1]a')
+      marc_map('264[,1]a',address,split:1)
+      uniq(address)
+      join_field(address,', ')
+   end
+end
+
+# abstract
+marc_map(520a,tmp,split:1)
+replace_all(tmp.*,"\s\(\s*(S\.|S\:)\s*\d{1,}(\-|\–)\d{1,}\s*\)$","")
+if exists(tmp.1)
+   copy_field(tmp.0,tmp_abstract_I)
+   copy_field(tmp.1,tmp_abstract_II)
+   if any_match(tmp_abstract_I,"^\w{3}\:\s.*\(.*\)$")
+      parse_text(tmp_abstract_I,"(?<abstract_I_language>^\w{3})\:\s(?<abstract_I>.*)\s*\((?<abstractor_I>.*)\)")
+	  move_field(tmp_abstract_I.abstract_I_language,abstract_I_language)
+	  move_field(tmp_abstract_I.abstract_I,abstract_I)
+	  move_field(tmp_abstract_I.abstractor_I,abstractor_I)
+   elsif any_match(tmp_abstract_I,"\(.*\)$")
+      parse_text(tmp_abstract_I,"(?<abstract_I>.*)\s*\((?<abstractor_I>.*)\)")
+      move_field(tmp_abstract_I.abstract_I,abstract_I)
+	  move_field(tmp_abstract_I.abstractor_I,abstractor_I)
+   elsif any_match(tmp_abstract_I,"^\w{3}\:\s.*")
+      parse_text(tmp_abstract_I,"(?<abstract_I_language>^\w{3})\:\s(?<abstract_I>.*)")
+	  move_field(tmp_abstract_I.abstract_I,abstract_I)
+	  move_field(tmp_abstract_I.abstract_I_language,abstract_I_language)	 
+   else
+      copy_field(tmp_abstract_I,abstract_I)
+   end
+   rm(tmp_abstract_I) 
+   if any_match(tmp_abstract_II,"^\w{3}\:\s.*\(.*\)$")
+      parse_text(tmp_abstract_II,"(?<abstract_II_language>^\w{3})\:\s(?<abstract_II>.*)\s*\((?<abstractor_II>.*)\)")
+	  move_field(tmp_abstract_II.abstract_II_language,abstract_II_language)
+	  move_field(tmp_abstract_II.abstract_II,abstract_II)
+	  move_field(tmp_abstract_II.abstractor_II,abstractor_II)
+   elsif any_match(tmp_abstract_II,"\(.*\)$")
+	  parse_text(tmp_abstract_II,"(?<abstract_II>.*)\s*\((?<abstractor_II>.*)\)")
+	  move_field(tmp_abstract_II.abstract_II,abstract_II)
+      move_field(tmp_abstract_II.abstractor_II,abstractor_II)
+   elsif any_match(tmp_abstract_II,"^\w{3}\:\s.*")
+      parse_text(tmp_abstract_II,"(?<abstract_II_language>^\w{3})\:\s(?<abstract_II>.*)")
+      move_field(tmp_abstract_II.abstract_II,abstract_II)
+      move_field(tmp_abstract_II.abstract_II_language,abstract_II_language) 	 
+   else
+      copy_field(tmp_abstract_II,abstract_II)
+   end
+   rm(tmp_abstract_II)
+   rm(tmp)
+   lookup(abstract_I_language,'./dictionary/language.csv')
+   lookup(abstract_II_language,'./dictionary/language.csv')
+else	  
+   copy_field(tmp.0,tmp_abstract)
+   if any_match(tmp_abstract,"^\w{3}\:\s.*\(.*\)$")
+	  parse_text(tmp_abstract,"(?<abstract_language>^\w{3})\:\s(?<abstract>.*)\s*\((?<abstractor>.*)\)")
+	  move_field(tmp_abstract.abstract_language,abstract_language)
+	  move_field(tmp_abstract.abstract,abstract)
+	  move_field(tmp_abstract.abstractor,abstractor)
+   elsif any_match(tmp_abstract,"\(.*\)$")
+	  parse_text(tmp_abstract,"(?<abstract>.*)\s*\((?<abstractor>.*)\)")
+	  move_field(tmp_abstract.abstract,abstract)
+	  move_field(tmp_abstract.abstractor,abstractor)
+   elsif any_match(tmp_abstract,"^\w{3}\:\s.*")
+      parse_text(tmp_abstract,"(?<abstract_language>^\w{3})\:\s(?<abstract>.*)")
+      move_field(tmp_abstract.abstract,abstract)
+	  move_field(tmp_abstract.abstract_language,abstract_language)		 
+   else
+      copy_field(tmp_abstract,abstract)
+   end
+   rm(tmp)
+   rm(tmp_abstract)
+   lookup(abstract_language,'./dictionary/language.csv')
+end	  
+
+trim(abstract)
+trim(abstract_I)
+trim(abstract_II)
+
+if any_match(abstractor,'.*\s.*')
+   parse_text(abstractor,"(?<firstname>^.*(\s.*)*)\s(?<lastname>\w{2,}(\-\w{2,})*$)")
+   move_field(abstractor.firstname,tmp_abstractor.1)
+   move_field(abstractor.lastname,tmp_abstractor.0)
+   join_field(tmp_abstractor,', ')
+   copy_field(tmp_abstractor,abstractor)
+   rm(tmp_abstractor)
+end
+if any_match(abstractor_I,'.*\s.*')
+   parse_text(abstractor_I,"(?<firstname>^.*(\s.*)*)\s(?<lastname>\w{2,}(\-*\w{2,})*$)")
+   move_field(abstractor_I.firstname,tmp_abstractor.1)
+   move_field(abstractor_I.lastname,tmp_abstractor.0)
+   join_field(tmp_abstractor,', ')
+   copy_field(tmp_abstractor,abstractor_I)
+   rm(tmp_abstractor)
+end
+if any_match(abstractor_II,'.*\s.*')
+   parse_text(abstractor_II,"(?<firstname>^.*(\s.*)*)\s(?<lastname>\w{2,}(\-*\w{2,})*$)")
+   move_field(abstractor_II.firstname,tmp_abstractor.1)
+   move_field(abstractor_II.lastname,tmp_abstractor.0)
+   join_field(tmp_abstractor,', ')
+   copy_field(tmp_abstractor,abstractor_II)
+   rm(tmp_abstractor)
+end
+
+
+# language_original
+if marc_has(041$h)
+   set_field(type,'bt')
+   marc_map(041h,'language_original',split: 1)
+   lookup(language_original.*,'./dictionary/language.csv')
+   join_field(language_original,', ')
+end
+
+# ÖNB-tag
+set_field(keywords,"austrian_committee")
+
+remove(record)

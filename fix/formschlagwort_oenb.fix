@@ -1,0 +1,70 @@
+# formschlagwort_oenb.fix
+# catmandu convert MARC --type MARCMaker to CSV --fields Konferenzschrift,Festschrift,Dissertation,Titelzusatz,ID --fix ./fix/formschlagwort_oenb.fix < ./data/oenb.mrk > formschlagwort_oenb.csv
+
+
+do marc_each()
+   marc_map(655$0,form_sw.$append)
+end
+   
+do marc_each()
+   marc_map(246$a,keyword.$append)
+   marc_map(246$i,keyword.$append)
+   marc_map(245$ab,keyword.$append,join:' ')
+   marc_map(653$a,keyword.$append)
+end
+
+do marc_each()
+   marc_map(502$b,thesis.$append)
+end
+
+do marc_each()
+   marc_map(971$a,thesis_keyword.$append)
+   marc_map(970$a,thesis_keyword.$append)
+end
+  
+if marc_has(111)
+   unless any_match(form_sw.*,"\(DE-588\)1071861417")
+	     marc_map(009,ID)
+         set_field(Konferenzschrift,'Gegebenenfalls >>=655  /7$0(DE-588)1071861417<< ergänzen = Konferenzschrift')
+   end
+elsif
+   any_match(keyword.*,'.*Konferenz.*|.*[C,c]onference.*|.*[W,w]orkshop.*|.*[S,s]ymposi[um,on].*|.*[C,c]ongres.*|.*[C,c]ongrès.*|.*Tagung.*|.*proceedin[g,gs].*')
+   unless any_match(form_sw.*,"\(DE-588\)1071861417")
+      marc_map(009,ID)
+      set_field(Konferenzschrift,'Gegebenenfalls >>=655  /7$0(DE-588)1071861417<< ergänzen = Konferenzschrift')
+   end
+end
+
+
+if any_match(keyword.*,'.*[F,f]estschrift.*')
+   unless any_match(form_sw.*,"\(DE-588\)4016928-5")
+      marc_map(009,ID)
+      set_field(Festschrift,'Gegebenenfalls >>=655  /7$0(DE-588)4016928-5<< ergänzen = Festschrift')
+   end
+end
+
+if any_match(thesis_keyword.*,'.*[Uu]niversität.*|.*[Uu]niversity.*|.*[Hh]ochschule.*|.*[Uu]niversité.*|HS-DISS')
+   unless any_match(thesis.*,"Dissertation")
+      marc_map(009,ID)
+      set_field(Dissertation,'Gegebenenfalls >>=502  //$bDissertation<< ergänzen = Dissertation')
+   end
+elsif
+   any_match(form_sw.*,"\(DE-588\)4113937-9")
+   unless any_match(thesis.*,"Dissertation")
+      marc_map(009,ID)
+      set_field(Dissertation,'Gegebenenfalls >>=502  //$bDissertation<< ergänzen = Dissertation') 
+   end	  
+end
+
+if marc_match(245$a,'.*')
+   unless marc_has(245$b)
+      unless marc_match(245$a,':')
+         marc_map(009,ID)
+	     set_field(Titelzusatz,'Gegebenenfalls >>$b<< in Feld 245 ergänzen')
+      end
+   end
+end
+
+remove(record)
+remove(_id)
+select exists(ID)

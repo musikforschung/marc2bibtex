@@ -1,0 +1,141 @@
+# delete redundant characters, replace and add data
+
+replace_all('title',"@","");
+replace_all('title',"\[","");
+replace_all('title',"\]","");
+replace_all('title',"\<|\>","");
+replace_all('address',"\[","");
+replace_all('address',"\]","");
+replace_all('number',"Band","");
+replace_all('number',"Bd.","");
+replace_all('number',"Volume","");
+replace_all('number',"Vol.","");
+replace_all('number',"vol.","");
+replace_all('number',"volume","");
+trim(number);
+replace_all('pages',"I","i");
+replace_all('pages',"L","l");
+replace_all('pages',"X","x");
+replace_all('pages',"V","v");
+replace_all('pages',"C","c");
+replace_all('pages',"Seiten","");
+replace_all('pages',"S.","");
+replace_all('pages',"S","");
+replace_all('pages',"pages","");
+replace_all('pages'," p","");
+replace_all('pages',"\(","");
+replace_all('pages',"\)","");
+replace_all('pages',"1 Band","");
+replace_all('pages',"Bl.","");
+replace_all('pages',"Bl","");
+replace_all('pages'," , zahlr. Ill.","");
+replace_all('pages'," , zahlr. Ill","");
+replace_all('pages'," , \überw. Noten","");
+trim(pages);
+replace_all('series',"@","");
+replace_all('maintitle',"@","");
+replace_all('eventtitle',"@","");
+replace_all('journal',"@","");
+replace_all('author.*','^\s',"");
+replace_all('author.*','@',"");
+replace_all('author.*','\!.*[0-9]\!',"");
+replace_all('author.*',',(.*),',"$1,");
+replace_all('author.*','<|>',"");
+replace_all('editor.*','^\s',"");
+replace_all('editor.*','@',"");
+replace_all('editor.*','\!.*[0-9]\!',"");
+replace_all('editor.*',',(.*),',"$1,");
+replace_all('editor.*','<|>',"");
+replace_all('author_afterword.*','@',"");
+replace_all('author_afterword.*','\!.*[0-9]\!',"");
+replace_all('author_afterword.*','^\s',"");
+replace_all('author_afterword.*',',(.*),',"$1,");
+replace_all('author_afterword.*','<|>',"");
+replace_all('author_collaborator.*','@',"");
+replace_all('author_collaborator.*','\!.*[0-9]\!',"");
+replace_all('author_collaborator.*','^\s',"");
+replace_all('author_collaborator.*',',(.*),',"$1,");
+replace_all('author_collaborator.*','<|>',"");
+replace_all('author_commentator.*','@',"");
+replace_all('author_commentator.*','\!.*[0-9]\!',"");
+replace_all('author_commentator.*','^\s',"");
+replace_all('author_commentator.*',',(.*),',"$1,");
+replace_all('author_commentator.*','<|>',"");
+replace_all('author_compiled.*','@',"");
+replace_all('author_compiled.*','\!.*[0-9]\!',"");
+replace_all('author_compiled.*','^\s',"");
+replace_all('author_compiled.*',',(.*),',"$1,");
+replace_all('author_compiled.*','<|>',"");
+replace_all('author_foreword.*','@',"");
+replace_all('author_foreword*','\!.*[0-9]\!',"");
+replace_all('author_foreword.*','^\s',"");
+replace_all('author_foreword.*',',(.*),',"$1,");
+replace_all('author_foreword.*','<|>',"");
+replace_all('author_illustrator.*','@',"");
+replace_all('author_illustrator*','\!.*[0-9]\!',"");
+replace_all('author_illustrator.*','^\s',"");
+replace_all('author_illustrator.*',',(.*),',"$1,");
+replace_all('author_illustrator.*','<|>',"");
+replace_all('author_introduction.*','@',"");
+replace_all('author_introduction*','\!.*[0-9]\!',"");
+replace_all('author_introduction.*','^\s',"");
+replace_all('author_introduction.*',',(.*),',"$1,");
+replace_all('author_introduction.*','<|>',"");
+replace_all('author_supervisor.*','@',"");
+replace_all('author_supervisor.*','\!.*[0-9]\!',"");
+replace_all('author_supervisor.*','^\s',"");
+replace_all('author_supervisor.*',',(.*),',"$1,");
+replace_all('author_supervisor.*','<|>',"");
+replace_all('author_translator.*','@',"");
+replace_all('author_translator.*','\!.*[0-9]\!',"");
+replace_all('author_translator.*','^\s',"");
+replace_all('author_translator.*',',(.*),',"$1,");
+replace_all('author_translator.*','<|>',"");
+replace_all('publisher.*',"\[|\]","");
+replace_all('publisher.*',"@","");
+replace_all('publisher.*','\!.*[0-9]\!',"");
+replace_all('publisher.*','^\s',"");
+replace_all('publisher.*',',(.*),',"$1,");
+replace_all('publisher.*','<|>',"");
+replace_all('honoured.*',"\[|\]","");
+replace_all('honoured.*',"@","");
+replace_all('honoured.*','\!.*[0-9]\!',"");
+replace_all('honoured.*','^\s',"");
+replace_all('honoured.*',',(.*),',"$1,");
+replace_all('honoured.*','<|>',"");
+
+# note
+trim(note.*);
+lookup('note.*','./dictionary/note.csv');
+sort_field(note,numeric:1);
+uniq(note);
+join(note,", ");
+
+# rename abstractor into RILM tags
+replace_all('abstractor',"[Aa]ut.*","author")
+replace_all('abstractor',"[Vv]erlag.*|Internet|SLUB Qucosa","publisher")
+replace_all('abstractor',"[Ss]ource|[Vv]orlage|[Vv]oorlage|[Vv]oelage","publisher")
+replace_all('abstractor',"Hrs.*|Herausgeb.*","editor")
+replace_all('abstractor_I',"[Aa]ut.*","author")
+replace_all('abstractor_I',"[Vv]erlag.*|Internet|SLUB Qucosa","publisher")
+replace_all('abstractor_I',"[Ss]ource|[Vv]orlage|[Vv]oorlage|[Vv]oelage","publisher")
+replace_all('abstractor_I',"Hrs.*|Herausgeb.*","editor")
+replace_all('abstractor_II',"[Aa]ut.*","author")
+replace_all('abstractor_II',"[Vv]erlag.*|Internet|SLUB Qucosa","publisher")
+replace_all('abstractor_II',"[Ss]ource|[Vv]orlage|[Vv]oorlage|[Vv]oelage","publisher")
+replace_all('abstractor_II',"Hrs.*|Herausgeb.*","editor")
+
+
+#miscellaneous
+replace_all('type',"proceedingsproceedings","proceedings")
+replace_all(title,': '," : ")
+#Seitenzahlen in Zaitschriftenaufsätzen (so lange gültig bis die Angabe der Jahre und Heftnummern geklärt ist
+if any_match(type,ap)
+   if any_match(year,'\d{4}-')
+      replace_all(year,'\d{4}-',"")
+   end
+end
+      
+
+vacuum();
+

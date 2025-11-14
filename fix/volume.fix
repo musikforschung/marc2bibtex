@@ -1,0 +1,16 @@
+# Liste der ACNummer und der Volumeangabe der Hauotaufnahme erstellen. Wird für die Volumeangabe der zugehörigen Aufsätze benötigt.
+# catmandu convert MARC --type MARCMaker to CSV --fix ./fix/volume.fix --fields ACNumber,volume < ./data/oenb.mrk > ./data/volume.csv
+
+if marc_match(LDR/7,'s')
+   if marc_has(490$v)
+      marc_map(009,ACNumber)
+      marc_map(490$v,volume)
+      replace_all(tmp_volume,'new\sseries,\s',"")
+      replace_all(tmp_volume.*,'(\.\s[Jj]\w*)',"")
+      replace_all(tmp_volume.*,'(\.\s)*[BbVvNnJjHhEe]\w*\.*\s*',"")
+   end	  
+end
+
+select exists(volume)
+
+rm(record)

@@ -1,0 +1,29 @@
+# Abrufen der vollständigen und sortierten Daten anhand der CSV mit den AC-Nummern aller Monografien und aller Hauptaufnahmen.
+# catmandu convert CSV to Null --fix ./fix/sru_sort_request.fix < ./data/oenb_sort.csv
+# SRU request:
+# logging
+log('SRU Request', level : WARN)
+
+if any_match(ac_number,'AC\d{5,}')
+   copy_field(ac_number,tmp.sru_1)
+   copy_field(ac_number,tmp.sru_2)
+   prepend(tmp.sru_1,'alma.local_control_field_009=')
+   prepend(tmp.sru_2,'alma.other_system_number=')
+   append(tmp.sru_2,' and alma.bib_level=a and alma.local_field_980=RILM')
+   search_sru(tmp.sru_1,'https://obv-at-oenb.alma.exlibrisgroup.com/view/sru/43ACC_ONB',recordschema:marcxml,parser:marcxml)
+   search_sru(tmp.sru_2,'https://obv-at-oenb.alma.exlibrisgroup.com/view/sru/43ACC_ONB',recordschema:marcxml,parser:marcxml)
+   if is_array(tmp.sru_1)
+      if is_array(tmp.sru_2)
+	     copy_field(tmp.sru_2.*,tmp.sru_1.$append)
+         do list(path:tmp.sru_1,var:var)
+		    add_to_exporter(var,MARC,type:MARCMaker,fix:./fix/mat_coll.fix,file:./data/oenb_coll.mrk)
+	     end
+      else
+         do list(path:tmp.sru_1,var:var)
+		    add_to_exporter(var,MARC,type:MARCMaker,fix:./fix/mat_ha.fix,file:./data/oenb_ha.mrk)
+	     end	  
+	  end
+   end
+   else   
+end
+sleep(500,MILLISECONDS)

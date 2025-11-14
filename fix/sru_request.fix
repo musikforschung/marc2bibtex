@@ -1,0 +1,13 @@
+# SRU-Anfrage anhand des aktuellen RILM-Stempels. Übernahme der AC-Nummer ausschlielich der Monografien und Hauptaufnahmen in CSV für eine vollständige Übernahme der Daten.
+# catmandu convert SRU --base https://obv-at-oenb.alma.exlibrisgroup.com/view/sru/43ACC_ONB --recordSchema marcxml --parser marcxml --query alma.local_field_980=RILM${DateOENB} to CSV --fix ./fix/sru_request.fix --fields ac_number > ./data/oenb.csv
+
+if marc_match(LDR/7,'a')
+   marc_map(773$w[0],ac_number)
+   replace_all(ac_number,'\(AT\-OBV\)',"")
+elsif marc_match(LDR/7,'m|s')
+   marc_map(009,ac_number)
+end
+
+select any_match(ac_number,'AC\d{5,}')
+
+rm(record)

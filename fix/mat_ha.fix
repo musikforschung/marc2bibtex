@@ -1,0 +1,43 @@
+# Fügt fehlende Formschlagwörter für die Art des Inhalts den MARC-Daten hinzu.
+
+if marc_match(LDR/7,'s')
+   if marc_match(008/21,'p')
+	  unless marc_match(655$0,"\(DE\-588\)4067488\-5")
+         marc_add(655,a,'Zeitschrift',0,'(DE-588)4067488-5')
+	  end
+   end
+end
+
+if marc_match(LDR/7,'m')
+   if marc_match(008/24,'m')
+	  unless marc_match(655$0,"\(DE\-588\)4113937\-9")
+         marc_add(655,a,'Hochschulschrift',0,'(DE-588)4113937-9')
+	 end
+   end
+end
+
+if marc_match(LDR/7,'m')
+   if marc_match(008/29,'1')
+	  unless marc_match(655$0,"\(DE\-588\)1071861417")
+         marc_add(655,a,'Konferenzschrift',0,'(DE-588)1071861417')
+	  end
+   end
+end
+
+if marc_match(LDR/7,'m')
+   if marc_match(008/30,'1')
+	  unless marc_match(655$0,"\(DE\-588\)4016928\-5")
+         marc_add(655,a,'Festschrift',0,'(DE\-588)4016928-5')
+	  end
+   end
+end
+
+if marc_match(LDR/7,'m')
+   if marc_match(008/34,"a|b|c")
+	  unless marc_match(655$0,"\(DE\-588\)4006804\-3")
+         marc_add(655,a,'Biografie',0,'DE-588)4006804-3')
+	  end
+   end
+end
+
+

@@ -1,0 +1,11 @@
+# Erstellt Liste der ACNummer und der Ländercodes der Hauptaufnahmen. Wird für die VErgabe der countrycodes der Aufsätze benötigt.
+# catmandu convert MARC --type MARCMaker to CSV --fix ./fix/countrycode.fix < ./data/oenb.mrk > ./data/countrycodelist.csv
+
+select marc_match(LDR/7,"m|s")
+
+if marc_match(LDR/7,"m|s")
+   marc_map(044$c,'country',join:', ')
+   marc_map(009,'_id')
+end
+
+remove_field('record');

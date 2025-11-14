@@ -1,0 +1,25 @@
+# Erstelle Liste von ACNummer und type der Hauptaufnahme. Wird für die Vergabe des types der zugehörigen Aufsätze benötigt. 
+# catmandu convert MARC --type MARCMaker to CSV --fix ./fix/type.fix --fields ACNumber,type < ./data/oenb.mrk > ./data/type.csv
+
+marc_map(009,ACNumber)
+do marc_each()
+   marc_map(655$0,dc_type.$append)
+   do list(path:dc_type,var:tmp)
+      # collection
+	  if any_match(tmp,'\(DE\-588\)4143413\-4')
+	     set_field(type,'ac')
+      # journal 
+      elsif any_match(tmp,'\(DE\-588\)4067488\-5')
+	     set_field(type,'ap')
+      # proceeding
+      elsif any_match(tmp,'\(DE\-588\)1071861417')
+	     set_field(type,'as')
+      # Festschrift
+      elsif any_match(tmp,'\(DE\-588\)4016928\-5')
+	     set_field(type,'ae')
+      end
+   end
+end
+
+select exists(type)
+remove(record)

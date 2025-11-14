@@ -1,0 +1,159 @@
+# Prüfung der BibTeX-Daten und Ausgabe einer Fehlerdatei
+# catmandu convert BibTeX to CSV --fields Type,Country,Note,Pages,Number,Volume,Year,Abstract,Abstractor,Series,Crossref,Ausschluss,PPN --fix ./fix/fehlermeldung.fix < dmpbms_${Date}.btx > fehlermeldung_oenb_${DateOENB}.csv
+
+if any_match(keywords,'austrian_committee')
+   unless any_match(type,'[abcdejmpr][abcdefgklmnprstvwxz]')
+      copy_field(_citekey,PPN)
+      set_field(Type,"Das Feld type konnte nicht ermittelt werden: ")
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(country)
+      if any_match(country,'\d{5,}|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Country,"Das Feld country konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(note)
+      if any_match(note,'.*[a-z].*|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Note,"Das Feld note konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(pages)
+      if any_match(pages,'\d{1,}-(\s)*$|^(\s)*-\d{1,}|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Pages,"Das Feld pages konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(number)
+      if any_match(number,'.*([a-z]|\.|\(|\)|\,).*|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Number,"Das Feld number konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(volume)
+      if any_match(volume,'.*([a-z]|\.|\(|\)|\,).*|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Volume,"Das Feld volume konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   unless any_match(type,'bp')
+      if exists(year)
+         unless any_match(year,"^(\d{4}|\d{4}\/\d{4}|\d{4}\/\d{2})$")
+            copy_field(_citekey,PPN)
+            set_field(Year,"Das Feld year konnte nicht ermittelt werden: ")
+	     end
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(abstract)
+      if any_match(abstract,'^[Nn]o [Aa]bstract|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Abstract,"Das Feld abstract konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(abstract_i)
+      if any_match(abstract_i,'^[Nn]o [Aa]bstract|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Abstract,"Das Feld abstract konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(abstract_ii)
+      if any_match(abstract_ii,'^[Nn]o [Aa]bstract|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Abstract,"Das Feld abstract konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(abstractor)
+      unless any_match(abstractor,'^\w{2,15}\,\s\w{2,15}(\s\w{1,5})*$|^author$|^publisher$|^editor$')
+         copy_field(_citekey,PPN)
+         set_field(Abstractor,"Das Feld abstractor konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(abstractor_i)
+      unless any_match(abstractor_i,'^\w{2,15}\,\s\w{2,15}(\s\w{1,5})*$|^author$|^publisher$|^editor$')
+        copy_field(_citekey,PPN)
+		set_field(Abstractor,"Das Feld abstractor konnte nicht ermittelt werden: ")
+	  end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(abstractor_ii)
+      unless any_match(abstractor_ii,'^\w{2,15}\,\s\w{2,15}(\s\w{1,5})*$|^author$|^publisher$|^editor$')
+         copy_field(_citekey,PPN)
+         set_field(Abstractor,"Das Feld abstractor konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(series)
+      if any_match(series,'^\d{1,}$|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Series,"Das Feld series konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(series_i)
+      if any_match(series_i,'^\d{1,}$|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Series,"Das Feld series konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(series_ii)
+      if any_match(series_ii,'^\d{1,}$|^\s*$')
+         copy_field(_citekey,PPN)
+         set_field(Series,"Das Feld series konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+if any_match(keywords,'austrian_committee')
+   if exists(crossref)
+      unless any_match(crossref,'^AC\d{8}$')
+         copy_field(_citekey,PPN)
+         set_field(Crossref,"Das Feld crossref konnte nicht ermittelt werden: ")
+      end
+   end
+end
+
+remove(record)
+
+select exists(PPN)
