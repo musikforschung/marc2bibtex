@@ -10,7 +10,6 @@ The German editorial office of the Répertoire International de Littérature Mus
 
 # Files description
 
-* [BibTeX_bms.pm](https://github.com/musikforschung/marc2bibtex/blob/main/BibTeX_bms.pm) contains some RILM-specific tags that are not supported in the original Catmandu [BibTeX module](https://github.com/LibreCat/Catmandu-BibTeX/tree/main/lib/Catmandu/Exporter): abstractor, author_afterword, author_collaborator, author_commentator, author_compiled, author_foreword, author_illustrator, author_introduction, author_supervisor, author_translator, country, crossref, eventdate, eventtitle, honoured, language_original, reviewed-item.
 * [countrycode.fix](https://github.com/musikforschung/marc2bibtex/blob/main/countrycode.fix) selects the country codes and IDs of all journals and collections. The loader codes are written to a csv file and transferred to the essays contained in the journals or collections in a later step.
 * [festschrift_proceeding.fix](https://github.com/musikforschung/Catmandu_PICAtoBibTeX/blob/main/festschrift_proceeding.fix) selects the IDs of all conference and festschriften and assigns the RILM-tag to them. The selected RILM-tags and IDs are written to a csv file and in a later step transferred to the articles contained in the conference and festschrift proceedings.
 * [note.csv](https://github.com/musikforschung/Catmandu_PICAtoBibTeX/blob/main/note.csv) contains the illustration details of the PICA field 034M and the corresponding RILM tag.
