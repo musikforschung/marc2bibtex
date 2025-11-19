@@ -2,7 +2,6 @@
 #Shell-Skript zur Einspielung der ÖNB-Daten in die BMS
 #$ bash bms_sru.sh
 
-
 # Ads
 # ggf. abstracts der Ads für upload aufbereiten
 catmandu convert YAML to TSV --fix ./fix/abstract_upload.fix --fields upload < ./data/ad_check.yml > ad_abstract_upload.tsv
