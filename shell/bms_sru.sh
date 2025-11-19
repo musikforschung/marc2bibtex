@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #Shell-Skript zur Einspielung der ÖNB-Daten in die BMS
-#$ bash marc2pica.sh
+#$ bash bms_sru.sh
 
 # Ads
 # ggf. abstracts der Ads für upload aufbereiten
