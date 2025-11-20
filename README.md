@@ -101,7 +101,7 @@ Am Staatlichen Institut für Musikforschung (SIM) befindet sich die deutsche Red
 
 * [marc2pica.sh](https://github.com/musikforschung/marc2bibtex/blob/main/shell/marc2pica.sh) Bash-Skript zur Ausführung aller Schritte der Transformation von MARC nach BibTex für RILM.
 
-#  benötigte Catmandu-Module
+# Erforderliche Catmandu-Module
 
 * [Catmandu::MARC](https://metacpan.org/pod/Catmandu::MARC)
 * [Catmandu::BibTeX](https://metacpan.org/pod/Catmandu::BibTeX)
