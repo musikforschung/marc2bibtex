@@ -4,5 +4,5 @@
 /fehlermeldungen
 /statistics
 *.mrk
-*.pp
+*.btx
 *.csv
