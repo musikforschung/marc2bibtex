@@ -33,7 +33,7 @@ The German editorial office of the Répertoire International de Littérature Mus
 
 [shell](https://github.com/musikforschung/marc2bibtex/tree/main/shell)
 
-* [marc2pica.sh](https://github.com/musikforschung/marc2bibtex/blob/main/shell/marc2pica.sh) Bash script to execute all steps of the transformation from MARC to BibTex for RILM.
+* [marc2bibtex.sh](https://github.com/musikforschung/marc2bibtex/blob/main/shell/marc2bibtex.sh) Bash script to execute all steps of the transformation from MARC to BibTex for RILM.
 
 # Required Catmandu modules
 
@@ -99,7 +99,7 @@ Am Staatlichen Institut für Musikforschung (SIM) befindet sich die deutsche Red
 
 [shell](https://github.com/musikforschung/marc2bibtex/tree/main/shell)
 
-* [marc2pica.sh](https://github.com/musikforschung/marc2bibtex/blob/main/shell/marc2pica.sh) Bash-Skript zur Ausführung aller Schritte der Transformation von MARC nach BibTex für RILM.
+* [marc2bibtex.sh](https://github.com/musikforschung/marc2bibtex/blob/main/shell/marc2bibtex.sh) Bash-Skript zur Ausführung aller Schritte der Transformation von MARC nach BibTex für RILM.
 
 # Erforderliche Catmandu-Module
 
