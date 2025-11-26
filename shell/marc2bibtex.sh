@@ -15,7 +15,7 @@ echo "
 Transformation der ÖNB-Daten nach BibTeX gestartet."
 
 # Weitergabe des aktuellen Stempels in die entsprechenden Fixes per $Date
-sed -i "s/alma.local_field_980=RILM[0-9]\+/alma.local_field_980=RILM\l$DateOENB/g" $HOME/rilm/marc2bibtex/fix/sru_sort_request.fix &&
+sed -i "s/alma.local_field_980=RILMJJJJQQ/alma.local_field_980=RILM\l$DateOENB/g" $HOME/rilm/marc2bibtex/fix/sru_sort_request.fix &&
 
 #Abrufen der Identifier der Hauptaufnahmen aller mit dem RILM-Stempel gekennzeichneten Datensätze
 catmandu convert SRU --base https://obv-at-oenb.alma.exlibrisgroup.com/view/sru/43ACC_ONB --recordSchema marcxml --parser marcxml --query alma.local_field_980=RILM${DateOENB} to CSV --fix $HOME/rilm/marc2bibtex/fix/sru_request.fix --fields ac_number > $HOME/rilm/marc2bibtex/data/oenb.csv &&
@@ -92,6 +92,9 @@ Statistik der transformierten MARC-Daten:
 "
 
 catmandu convert BibTeX to Stat --fix $HOME/rilm/marc2bibtex/fix/stat.fix --fields Aufsätze_Monografien,Rezensionen,Abstracts < $HOME/rilm/marc2bibtex/dmpbms_${DateOENB}.btx 2>/dev/null | tee $HOME/rilm/marc2bibtex/statistics/rilm_export_statistik_${DateOENB}.csv &&
+
+sed -i "s/alma.local_field_980=RILM${DateOENB}/alma.local_field_980=RILMJJJJQQ/g" $HOME/rilm/marc2bibtex/fix/sru_sort_request.fix &&
+
 echo "
 ------------------------------------------------------"
 echo "Ende.
