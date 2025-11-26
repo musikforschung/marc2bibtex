@@ -52,6 +52,8 @@ done
 echo "
 Transformation der ÖNB-Daten nach BibTeX gestartet."
 
+cd $HOME/rilm/marc2bibtex/
+
 # Weitergabe des aktuellen Stempels in die entsprechenden Fixes per $Date
 sed -i "s/alma.local_field_980=RILMJJJJQQ/alma.local_field_980=RILM\l$DateOENB/g" $HOME/rilm/marc2bibtex/fix/sru_sort_request.fix &&
 
