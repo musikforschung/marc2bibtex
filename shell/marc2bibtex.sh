@@ -135,6 +135,5 @@ sed -i "s/alma.local_field_980=RILM${DateOENB}/alma.local_field_980=RILMJJJJQQ/g
 
 echo "
 ------------------------------------------------------"
-echo "Ende.
-"
+echo "Ende."
 
