@@ -24,6 +24,6 @@ if any_match(ac_number,'AC\d{5,}')
 	     end	  
 	  end
    end
-   else   
 end
+
 sleep(500,MILLISECONDS)

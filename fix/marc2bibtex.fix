@@ -256,12 +256,23 @@ if marc_match(LDR/7,'a')
    replace_all(tmp,'\(AT\-OBV\)',"")
    lookup(tmp,'./data/type.csv')
    copy_field(tmp,type)
-   if any_match(type,'a\w{1}|ea') 
+   if any_match(type,'a\w{1}|ea|r\w{1}') 
       marc_map(773w,crossref)
       replace_all(crossref,"\(AT\-OBV\)","")
       trim(crossref)
    elsif any_match(type,'AC\d{6,}')
       set_field(type,'misc')	  
+   end
+end
+#field journal
+if marc_match(773$t,'.*')
+   if any_match(type,'ap')
+      marc_map(773$t,tmp)
+      replace_all(tmp,'>>|<<',"")
+      parse_text(tmp,'(?<title>^.*)(\s\/.*)*')
+	  replace_all(tmp.title,"\s\/$","")
+      copy_field(tmp.title,journal)
+	  replace_all(journal,"\s\/","")
    end
 end
 
@@ -386,7 +397,7 @@ if exists(tmp_series.0)
    end
 end
 
-# volume (articles)
+# volume (articles(incollection)
 if marc_match(LDR/7,'a')
    marc_map(773g,'tmp')
    replace_all(tmp,"\(AT\-OBV\)","")

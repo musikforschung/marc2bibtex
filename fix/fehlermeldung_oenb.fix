@@ -1,10 +1,10 @@
 # Prüfung der BibTeX-Daten und Ausgabe einer Fehlerdatei
-# catmandu convert BibTeX to CSV --fields Type,Country,Note,Pages,Number,Volume,Year,Abstract,Abstractor,Series,Crossref,Ausschluss,PPN --fix ./fix/fehlermeldung.fix < dmpbms_${Date}.btx > fehlermeldung_oenb_${DateOENB}.csv
+# catmandu convert BibTeX to CSV --fields Type,Country,Note,Pages,Number,Volume,Year,Abstract,Abstractor,Series,Crossref,Ausschluss,PPN --fix ./fix/fehlermeldung_oenb.fix < dmpbms_${Date}.btx > fehlermeldung_oenb_${DateOENB}.csv
 
 if any_match(keywords,'austrian_committee')
-   unless any_match(type,'[abcdejmpr][abcdefgklmnprstvwxz]')
-      copy_field(_citekey,PPN)
-      set_field(Type,"Das Feld type konnte nicht ermittelt werden: ")
+   unless any_match(type,'collection|festschrift|facsimile|blog_bm|book|periodical|proceeding|translation|dissertation|thesis|electronic_resource|motion_picture|sound_recording|review|article')
+   copy_field(_citekey,PPN)
+   set_field(Type,"Das document_type @ konnte nicht ermittelt werden: ")
    end
 end
 

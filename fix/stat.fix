@@ -22,13 +22,13 @@ if any_match(keywords,'austrian_committee')
 end
 
 if any_match(keywords,'austrian_committee')
-   if any_match(type,'ab|ac|ad|ae|ag|ap|as|ea|bc|bd|be|bf|bg|bs|bt|dd|dm|er')
+   if any_match(type,'collection|festschrift|facsimile|blog_bm|book|proceeding|translation|dissertation|thesis|electronic_resource|motion_picture|sound_recording|article')
       copy_field(type,Aufsätze_Monografien)
    end
 end
 
 if any_match(keywords,'austrian_committee')
-   if any_match(type,'r\w{1}')
+   if any_match(type,'review')
       copy_field(type,Rezensionen)
    end
 end
