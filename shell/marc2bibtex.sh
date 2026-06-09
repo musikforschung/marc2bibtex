@@ -150,7 +150,7 @@ echo "
 Statistik der transformierten MARC-Daten:
 "
 
-catmandu convert BibTeX to Stat --fix $HOME/rilm/marc2bibtex/fix/stat.fix --fields Aufsätze_Monografien,Rezensionen,Abstracts < $HOME/rilm/marc2bibtex/dmpbms_${DateOENB}.btx 2>/dev/null | tee $HOME/rilm/marc2bibtex/statistics/rilm_export_statistik_${DateOENB}.csv &&
+catmandu convert BibTeX to Stat --fix $HOME/rilm/marc2bibtex/fix/stat.fix --fields Aufsätze_Monografien,Rezensionen,Abstracts,Zeitschriften < $HOME/rilm/marc2bibtex/dmpbms_${DateOENB}.btx 2>/dev/null | tee $HOME/rilm/marc2bibtex/statistics/rilm_export_statistik_${DateOENB}.csv &&
 
 sed -i "s/alma.local_field_980=RILM${DateOENB}/alma.local_field_980=RILMJJJJQQ/g" $HOME/rilm/marc2bibtex/fix/sru_sort_request.fix &&
 
