@@ -20,7 +20,7 @@ if any_match(keywords,'austrian_committee')
 end
 
 if any_match(keywords,'austrian_committee')
-   if if any_match(type,'collection|book|dissertation|thesis|electronicres|film|audio|article|incollection')
+   if any_match(type,'collection|book|dissertation|thesis|electronicres|film|audio|article|incollection')
       copy_field(type,Aufsätze_Monografien)
    end
 end
